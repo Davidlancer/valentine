@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Pacifico&display=swap');
+
+        :root {
+            --primary: #ff4757;
+            --secondary: #ff6b81;
+            --bg-color: #ffe6e6;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --shadow: 0 8px 32px 0 rgba(255, 71, 87, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffc0cb 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating Hearts Background */
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 71, 87, 0.2);
+            font-size: 2rem;
+            animation: float 15s infinite linear;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(110vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            max-width: 90%;
+            width: 400px;
+            position: relative;
+            transition: transform 0.3s ease;
+            animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .gif-container {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 220px;
+        }
+
+        /* FIX: Force GIF visibility and dimensions */
+        #gif {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            border-radius: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.8);
+        }
+
+        p {
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            min-height: 1.5em;
+        }
+
+        /* BUTTONS */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        button {
+            padding: 12px 32px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .btn-yes {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+            z-index: 20;
+        }
+
+        .btn-yes:hover {
+            background-color: #ff2e43;
+            transform: scale(1.05);
+        }
+
+        .btn-no {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            z-index: 15;
+            position: static;
+        }
+
+        .btn-no:hover {
+            background-color: #fff0f3;
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 2rem;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .buttons {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="hearts-bg"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="container">
+        <div class="gif-container">
+            <!-- Initial GIF sourced from Giphy (Primary Default) -->
+            <img id="gif" src="https://media.giphy.com/media/xT0xeuOy2Fcl9vDGiA/giphy.gif" alt="Cute Bear">
+        </div>
+        <h1 id="headline">Loading...</h1>
+        <p id="subtext">I have a question for you... 👉👈</p>
+
+        <div class="buttons">
+            <button class="btn-yes" id="yes-btn" onclick="handleYes()">Yes 💖</button>
+            <button class="btn-no" id="no-btn" onclick="handleNo()">No 🙄</button>
+        </div>
+    </div>
+
+    <!-- AUDIO -->
+    <audio id="bg-music" loop>
+        <source
+            src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1e5b8e30b1.mp3?filename=piano-moment-123772.mp3"
+            type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ==========================================
+        // 1. GIPHY CONFIGURATION (RELIABLE IDS)
+        // ==========================================
+        const GIFS = {
+            default: {
+                primary: "https://media.giphy.com/media/xT0xeuOy2Fcl9vDGiA/giphy.gif", // Waving
+                fallback: "https://media.giphy.com/media/3o7qDEq2bMbcbPRQ2c/giphy.gif" // Milk Mocha fallback
+            },
+            crying: {
+                primary: "https://media.giphy.com/media/106i9kSPIHqUBa/giphy.gif", // Crying Bear
+                fallback: "https://media.giphy.com/media/OPU6pZ2ji8l8Y/giphy.gif" // Fallback
+            },
+            happy: {
+                primary: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif", // Celebration
+                fallback: "https://media.giphy.com/media/10UeedrT5MIfPG/giphy.gif" // Happy Fallback
+            }
+        };
+
+        // DOM ELEMENTS
+        const headline = document.getElementById('headline');
+        const subtext = document.getElementById('subtext');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const music = document.getElementById('bg-music');
+        const container = document.querySelector('.container');
+        const gif = document.getElementById("gif");
+
+        // INITIAL STATE
+        document.title = "Be My Valentine? ❤️";
+        headline.innerText = "Will you be my Valentine? 💘";
+
+        const pleadingMessages = [
+            "Are you really sure? 🥺",
+            "Are you VERY very sure?? 😭",
+            "Think again... I'm sensitive 😔",
+            "Please don't... my heart 💔",
+            "I'm actually crying now 😭",
+            "Just click YES already! 😡",
+            "Pretty please? With sugar? 🍒",
+            "Don't be cold like this... ❄️",
+            "I'll buy you chocolate! 🍫",
+            "Okay, now you're just being mean 😢"
+        ];
+
+        // ==========================================
+        // 2. SAFE GIPHY SETTER
+        // ==========================================
+        function setGif(type) {
+            const { primary, fallback } = GIFS[type];
+            // Reset handlers to prevent loops
+            gif.onload = null;
+            gif.onerror = null;
+
+            // Try primary
+            gif.src = primary;
+
+            // Fallback logic
+            gif.onerror = () => {
+                console.warn(`Primary GIF failed for ${type}. Switching to fallback.`);
+                gif.onerror = null; // Prevent loop
+                gif.src = fallback;
+            };
+        }
+
+        // ==========================================
+        // 3. FORCE VISIBILITY ON LOAD
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", () => {
+            gif.style.display = "block";
+            gif.style.visibility = "visible";
+            gif.style.opacity = "1";
+
+            // Ensure default is loaded via JS logic too
+            setGif("default");
+        });
+
+        // Preload all
+        window.onload = () => {
+            Object.values(GIFS).forEach(group => {
+                new Image().src = group.primary;
+                new Image().src = group.fallback;
+            });
+        };
+
+        // ==========================================
+        // EVENT HANDLERS
+        // ==========================================
+        let noCount = 0;
+        let yesSize = 1;
+
+        function handleNo() {
+            // STEP 1: GIF ALWAYS FIRST (Prioritize Visuals)
+            setGif("crying");
+
+            noCount++;
+
+            // Text change
+            const messageIndex = Math.min(noCount, pleadingMessages.length) - 1;
+            subtext.innerText = pleadingMessages[messageIndex] || pleadingMessages[pleadingMessages.length - 1];
+
+            // Yes Button Grow
+            yesSize += 0.3;
+            yesBtn.style.transform = `scale(${yesSize})`;
+
+            // No Button Run Away
+            if (noBtn.style.position !== 'absolute') {
+                noBtn.style.position = 'absolute';
+            }
+
+            // Viewport Clamp
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const btnRect = noBtn.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            const maxX = viewportWidth - btnRect.width;
+            const maxY = viewportHeight - btnRect.height;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            noBtn.style.left = (randomX - containerRect.left) + 'px';
+            noBtn.style.top = (randomY - containerRect.top) + 'px';
+
+            // Shrink
+            const currentScale = 1 - (noCount * 0.1);
+            if (currentScale > 0) {
+                noBtn.style.transform = `scale(${currentScale})`;
+            } else {
+                noBtn.style.display = 'none';
+            }
+        }
+
+        function handleYes() {
+            // STEP 1: GIF ALWAYS FIRST
+            setGif("happy");
+
+            headline.innerText = "YAYYYY!!! 💖🥳";
+            subtext.innerText = "Best decision ever! I love you! 🥰";
+
+            noBtn.style.display = 'none';
+            yesBtn.style.transform = 'scale(1.5)';
+            yesBtn.innerText = "LOVE YOU 3000 ❤️";
+            yesBtn.disabled = true;
+
+            music.volume = 0.3;
+            music.play().catch(e => console.log("Audio play failed"));
+
+            startConfetti();
+        }
+
+        // DECORATIONS (Hearts & Confetti)
+        function createHearts() {
+            const container = document.getElementById('hearts-bg');
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerText = Math.random() > 0.5 ? '❤️' : '💖';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 5 + 10) + 's';
+                heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        let confettiParticles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function startConfetti() {
+            for (let i = 0; i < 300; i++) {
+                confettiParticles.push({
+                    x: canvas.width / 2, y: canvas.height / 2,
+                    r: Math.random() * 6 + 4,
+                    dx: Math.random() * 10 - 5, dy: Math.random() * 10 - 15,
+                    color: `hsl(${Math.random() * 360}, 100%, 70%)`
+                });
+            }
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confettiParticles.forEach((p, index) => {
+                p.y += (1 + p.r / 2) / 2; p.x += Math.sin(p.y / 10) * 2;
+                ctx.beginPath(); ctx.fillStyle = p.color;
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                if (p.y > canvas.height) confettiParticles.splice(index, 1);
+            });
+            if (confettiParticles.length > 0) requestAnimationFrame(animateConfetti);
+        }
+    </script>
+</body>
+
+</html>
