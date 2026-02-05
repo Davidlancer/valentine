@@ -223,9 +223,7 @@
 
     <!-- AUDIO -->
     <audio id="bg-music" loop>
-        <source
-            src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1e5b8e30b1.mp3?filename=piano-moment-123772.mp3"
-            type="audio/mpeg">
+        <source src="./assets/Goofy Music Soundtrack.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -374,8 +372,8 @@
             yesBtn.innerText = "LOVE YOU 3000 ❤️";
             yesBtn.disabled = true;
 
-            music.volume = 0.3;
-            music.play().catch(e => console.log("Audio play failed"));
+            music.volume = 0.15;
+            music.play().catch(e => console.log("Audio play failed (interaction likely required)", e));
 
             startConfetti();
         }
