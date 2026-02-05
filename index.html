@@ -372,11 +372,30 @@
             yesBtn.innerText = "LOVE YOU 3000 ❤️";
             yesBtn.disabled = true;
 
-            music.volume = 0.15;
-            music.play().catch(e => console.log("Audio play failed (interaction likely required)", e));
-
+            // music.play() is handled globally now to ensure it plays earlier
             startConfetti();
         }
+
+        // ==========================================
+        // AUDIO AUTOPLAY & FALLBACK
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", () => {
+            music.volume = 0.15;
+            music.loop = true;
+
+            // Attempt Autoplay
+            const playPromise = music.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay prevented. Waiting for first interaction.");
+                    // Add listener for first click anywhere
+                    document.body.addEventListener('click', function unlockAudio() {
+                        music.play();
+                        document.body.removeEventListener('click', unlockAudio);
+                    }, { once: true });
+                });
+            }
+        });
 
         // DECORATIONS (Hearts & Confetti)
         function createHearts() {
