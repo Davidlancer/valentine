@@ -199,6 +199,20 @@
                 gap: 1rem;
             }
         }
+
+        .footer {
+            position: fixed;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--primary);
+            opacity: 0.6;
+            z-index: 5;
+            pointer-events: none;
+            font-family: 'Outfit', sans-serif;
+        }
     </style>
 </head>
 
@@ -220,6 +234,8 @@
             <button class="btn-no" id="no-btn" onclick="handleNo()">No 🙄</button>
         </div>
     </div>
+
+    <div class="footer">Made by Blunt, Made with Love❤️</div>
 
     <!-- AUDIO -->
     <audio id="bg-music" loop>
